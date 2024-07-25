@@ -3,11 +3,12 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 public class LevelGenerator : MonoBehaviour
 {
     public int gridSize = 10;
-    public Button letterButtonPrefab;
+    public Letter letterPrefab;
     public Transform gridParent;
     public TextMeshProUGUI selectedWordText;
     public TextMeshProUGUI topicTitleText;
@@ -19,10 +20,12 @@ public class LevelGenerator : MonoBehaviour
     public bool allowReverseWords = true;
 
     private List<Theme> wordThemes;
-    private char[,] grid;
+    private Letter[,] grid;
     private string selectedTheme;
     private List<string> currentWordList;
     private List<string> wordsToFind;
+    private List<Letter> selectedLetters = new List<Letter>();
+    private bool isSelecting = false;
 
     void Start()
     {
@@ -112,15 +115,15 @@ public class LevelGenerator : MonoBehaviour
 
     void GenerateGrid()
     {
-        grid = new char[gridSize, gridSize];
+        grid = new Letter[gridSize, gridSize];
         for (int i = 0; i < gridSize; i++)
         {
             for (int j = 0; j < gridSize; j++)
             {
-                Button button = Instantiate(letterButtonPrefab, gridParent);
-                button.GetComponentInChildren<TextMeshProUGUI>().text = "";
-                button.onClick.AddListener(() => OnLetterButtonClick(button));
-                grid[i, j] = ' ';
+                Letter letter = Instantiate(letterPrefab, gridParent);
+                letter.SetLevelGenerator(this);
+                letter.Initialize(' ', new Vector2(i, j));
+                grid[i, j] = letter;
             }
         }
     }
@@ -129,7 +132,6 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (string word in wordsToFind)
         {
-            Debug.Log(word);
             string wordToPlace = word.ToUpper();
             if (allowReverseWords && Random.value > 0.5f)
             {
@@ -162,16 +164,16 @@ public class LevelGenerator : MonoBehaviour
                     switch (direction)
                     {
                         case 0: // horizontal
-                            grid[row, col + i] = word[i];
+                            grid[row, col + i].Initialize(word[i], new Vector2(row, col + i));
                             break;
                         case 1: // vertical
-                            grid[row + i, col] = word[i];
+                            grid[row + i, col].Initialize(word[i], new Vector2(row + i, col));
                             break;
                         case 2: // diagonal (down-right)
-                            grid[row + i, col + i] = word[i];
+                            grid[row + i, col + i].Initialize(word[i], new Vector2(row + i, col + i));
                             break;
                         case 3: // diagonal (down-left)
-                            grid[row + i, col - i] = word[i];
+                            grid[row + i, col - i].Initialize(word[i], new Vector2(row + i, col - i));
                             break;
                     }
                 }
@@ -188,28 +190,28 @@ public class LevelGenerator : MonoBehaviour
             case 0: // horizontal
                 if (col + word.Length > gridSize) return false;
                 for (int i = 0; i < word.Length; i++)
-                    if (grid[row, col + i] != ' ' && grid[row, col + i] != word[i])
+                    if (grid[row, col + i].letter != ' ' && grid[row, col + i].letter != word[i])
                         return false;
                 break;
 
             case 1: // vertical
                 if (row + word.Length > gridSize) return false;
                 for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col] != ' ' && grid[row + i, col] != word[i])
+                    if (grid[row + i, col].letter != ' ' && grid[row + i, col].letter != word[i])
                         return false;
                 break;
 
             case 2: // diagonal (down-right)
                 if (row + word.Length > gridSize || col + word.Length > gridSize) return false;
                 for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col + i] != ' ' && grid[row + i, col + i] != word[i])
+                    if (grid[row + i, col + i].letter != ' ' && grid[row + i, col + i].letter != word[i])
                         return false;
                 break;
 
             case 3: // diagonal (down-left)
                 if (row + word.Length > gridSize || col - word.Length < 0) return false;
                 for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col - i] != ' ' && grid[row + i, col - i] != word[i])
+                    if (grid[row + i, col - i].letter != ' ' && grid[row + i, col - i].letter != word[i])
                         return false;
                 break;
         }
@@ -222,23 +224,55 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = 0; j < gridSize; j++)
             {
-                if (grid[i, j] == ' ')
+                if (grid[i, j].letter == ' ')
                 {
-                    grid[i, j] = (char)('A' + Random.Range(0, 26));
+                    char randomChar = (char)('A' + Random.Range(0, 26));
+                    grid[i, j].Initialize(randomChar, new Vector2(i, j));
                 }
-                gridParent.GetChild(i * gridSize + j).GetComponentInChildren<TextMeshProUGUI>().text = grid[i, j].ToString();
             }
         }
     }
 
     void DisplayTopicAndWords()
     {
-        topicTitleText.text = selectedTheme;
-        wordsToFindText.text = "<b>Find the words:</b> " + string.Join(", ", wordsToFind);
+        topicTitleText.text = "Topic: " + selectedTheme;
+        wordsToFindText.text = "Find the words: " + string.Join(", ", wordsToFind);
     }
 
-    public void OnLetterButtonClick(Button button)
+    public void StartSelectingLetter(Letter letter)
     {
-        selectedWordText.text += button.GetComponentInChildren<TextMeshProUGUI>().text;
+        isSelecting = true;
+        selectedLetters.Clear();
+        selectedLetters.Add(letter);
+        UpdateSelectedWordDisplay();
+    }
+
+    public void SelectLetter(Letter letter)
+    {
+        if (isSelecting && !selectedLetters.Contains(letter))
+        {
+            selectedLetters.Add(letter);
+            UpdateSelectedWordDisplay();
+        }
+    }
+
+    public void FinishSelectingLetter()
+    {
+        isSelecting = false;
+        string formedWord = new string(selectedLetters.Select(l => l.letter).ToArray());
+        formedWord = formedWord.ToLower();
+        if (wordsToFind.Contains(formedWord))
+        {
+            Debug.Log("Found word: " + formedWord);
+            wordsToFind.Remove(formedWord);
+            // Aquí puedes agregar lógica para actualizar la UI, eliminar las letras, etc.
+        }
+        selectedLetters.Clear();
+        UpdateSelectedWordDisplay();
+    }
+
+    void UpdateSelectedWordDisplay()
+    {
+        selectedWordText.text = new string(selectedLetters.Select(l => l.letter).ToArray());
     }
 }
