@@ -16,6 +16,7 @@ public class LevelGenerator : MonoBehaviour
     public int numberOfWordsToFind = 5;
     public bool allowVerticalPlacement = true;
     public bool allowDiagonalPlacement = true;
+    public bool allowReverseWords = true;
 
     private List<Theme> wordThemes;
     private char[,] grid;
@@ -128,8 +129,21 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (string word in wordsToFind)
         {
-            PlaceWordInGrid(word.ToUpper());
+            Debug.Log(word);
+            string wordToPlace = word.ToUpper();
+            if (allowReverseWords && Random.value > 0.5f)
+            {
+                wordToPlace = ReverseString(wordToPlace);
+            }
+            PlaceWordInGrid(wordToPlace);
         }
+    }
+
+    string ReverseString(string s)
+    {
+        char[] charArray = s.ToCharArray();
+        System.Array.Reverse(charArray);
+        return new string(charArray);
     }
 
     void PlaceWordInGrid(string word)

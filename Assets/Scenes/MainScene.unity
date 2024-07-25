@@ -553,6 +553,9 @@ MonoBehaviour:
   wordsToFindText: {fileID: 54634796}
   wordThemesFile: {fileID: 4900000, guid: 62bc6f2c67a1f4f92a59d2c1ab9df26d, type: 3}
   numberOfWordsToFind: 5
+  allowVerticalPlacement: 1
+  allowDiagonalPlacement: 1
+  allowReverseWords: 1
 --- !u!4 &727306937
 Transform:
   m_ObjectHideFlags: 0
