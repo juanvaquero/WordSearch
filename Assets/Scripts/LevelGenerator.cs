@@ -330,6 +330,7 @@ public class LevelGenerator : MonoBehaviour
         UpdateLineRenderer();
     }
 
+
     public void SelectLetter(Letter letter)
     {
         if (isSelecting)
@@ -347,7 +348,7 @@ public class LevelGenerator : MonoBehaviour
             selectionDirection = newDirection;
             Vector2Int expectedPosition = startGridPosition + selectionDirection * selectedLetters.Count;
 
-            if (Vector2Int.RoundToInt(letter.gridPosition) == expectedPosition)
+            if (Vector2Int.RoundToInt(letter.gridPosition) == expectedPosition && !selectedLetters.Contains(letter))
             {
                 selectedLetters.Add(letter);
                 UpdateSelectedWordDisplay();
@@ -355,6 +356,7 @@ public class LevelGenerator : MonoBehaviour
             }
         }
     }
+
 
     void ClearSelectionFromDirectionChange()
     {
