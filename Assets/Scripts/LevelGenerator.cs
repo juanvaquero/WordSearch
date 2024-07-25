@@ -14,6 +14,9 @@ public class LevelGenerator : MonoBehaviour
     public TextMeshProUGUI wordsToFindText;
     public TextAsset wordThemesFile;
     public int numberOfWordsToFind = 5;
+    public bool allowVerticalPlacement = true;
+    public bool allowDiagonalPlacement = true;
+
     private List<Theme> wordThemes;
     private char[,] grid;
     private string selectedTheme;
@@ -113,9 +116,9 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int j = 0; j < gridSize; j++)
             {
-                Button button = Instantiate<Button>(letterButtonPrefab, gridParent);
+                Button button = Instantiate(letterButtonPrefab, gridParent);
                 button.GetComponentInChildren<TextMeshProUGUI>().text = "";
-                button.GetComponent<Button>().onClick.AddListener(() => OnLetterButtonClick(button));
+                button.onClick.AddListener(() => OnLetterButtonClick(button));
                 grid[i, j] = ' ';
             }
         }
@@ -136,19 +139,26 @@ public class LevelGenerator : MonoBehaviour
         {
             int row = Random.Range(0, gridSize);
             int col = Random.Range(0, gridSize);
-            int direction = Random.Range(0, 2); // 0 = horizontal, 1 = vertical
+            int direction = Random.Range(0, allowDiagonalPlacement ? 4 : (allowVerticalPlacement ? 2 : 1)); // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
 
             if (CanPlaceWord(word, row, col, direction))
             {
                 for (int i = 0; i < word.Length; i++)
                 {
-                    if (direction == 0)
+                    switch (direction)
                     {
-                        grid[row, col + i] = word[i];
-                    }
-                    else
-                    {
-                        grid[row + i, col] = word[i];
+                        case 0: // horizontal
+                            grid[row, col + i] = word[i];
+                            break;
+                        case 1: // vertical
+                            grid[row + i, col] = word[i];
+                            break;
+                        case 2: // diagonal (down-right)
+                            grid[row + i, col + i] = word[i];
+                            break;
+                        case 3: // diagonal (down-left)
+                            grid[row + i, col - i] = word[i];
+                            break;
                     }
                 }
                 break;
@@ -159,25 +169,35 @@ public class LevelGenerator : MonoBehaviour
 
     bool CanPlaceWord(string word, int row, int col, int direction)
     {
-        if (direction == 0 && col + word.Length > gridSize) return false;
-        if (direction == 1 && row + word.Length > gridSize) return false;
-
-        for (int i = 0; i < word.Length; i++)
+        switch (direction)
         {
-            if (direction == 0)
-            {
-                if (grid[row, col + i] != ' ' && grid[row, col + i] != word[i])
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (grid[row + i, col] != ' ' && grid[row + i, col] != word[i])
-                {
-                    return false;
-                }
-            }
+            case 0: // horizontal
+                if (col + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row, col + i] != ' ' && grid[row, col + i] != word[i])
+                        return false;
+                break;
+
+            case 1: // vertical
+                if (row + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col] != ' ' && grid[row + i, col] != word[i])
+                        return false;
+                break;
+
+            case 2: // diagonal (down-right)
+                if (row + word.Length > gridSize || col + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col + i] != ' ' && grid[row + i, col + i] != word[i])
+                        return false;
+                break;
+
+            case 3: // diagonal (down-left)
+                if (row + word.Length > gridSize || col - word.Length < 0) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col - i] != ' ' && grid[row + i, col - i] != word[i])
+                        return false;
+                break;
         }
         return true;
     }
