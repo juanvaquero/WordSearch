@@ -164,6 +164,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: rectangle
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 27
+        width: 50
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d12cf7dfa61f49a3b125badec15ed87
+      internalID: 936924353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -176,6 +197,7 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       circle: -192866565
+      rectangle: 936924353
       semi_circle: -745860028
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

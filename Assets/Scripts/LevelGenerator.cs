@@ -10,7 +10,7 @@ public class LevelGenerator : MonoBehaviour
     public Transform gridParent;
     public TextMeshProUGUI selectedWordText;
     public TextMeshProUGUI topicTitleText;
-    public TextMeshProUGUI wordsToFindText;
+
     public TextAsset wordThemesFile;
     public int numberOfWordsToFind = 5;
     public bool allowVerticalPlacement = true;
@@ -18,6 +18,11 @@ public class LevelGenerator : MonoBehaviour
     public bool allowReverseWords = true;
     public Transform lineRendererParent; // Parent of all line renderers
     public WordSearchConfig config;
+
+    public WordsSearchItem wordsSearchItem;
+    public Transform wordsSearchItemsParent;
+    private Dictionary<string, WordsSearchItem> wordSearchItems = new Dictionary<string, WordsSearchItem>();
+
 
     private List<Theme> wordThemes;
     private Letter[,] grid;
@@ -42,8 +47,9 @@ public class LevelGenerator : MonoBehaviour
             SelectRandomWords();
             PlaceWords();
             FillGrid();
-            DisplayTopicAndWords();
             CreateNewLineRenderer();
+            DisplayTopic();
+            CreateWordPanels();
         }
         else
         {
@@ -239,10 +245,9 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    void DisplayTopicAndWords()
+    void DisplayTopic()
     {
-        topicTitleText.text = "Topic: " + selectedTheme;
-        wordsToFindText.text = "Find the words: " + string.Join(", ", wordsToFind);
+        topicTitleText.text = selectedTheme;
     }
 
     public void StartSelectingLetter(Letter letter)
@@ -299,18 +304,19 @@ public class LevelGenerator : MonoBehaviour
         {
             Debug.Log("Found word: " + formedWord);
             wordsToFind.Remove(formedWord);
-            // Mantener la selección actual
+            wordSearchItems[formedWord].MarkAsFound();
             currentLineRendererController = null;
             CreateNewLineRenderer();
         }
         else
         {
-            // Limpiar selección si la palabra no es encontrada
+            // Clear the selection letters if the word is founded.
             selectedLetters.Clear();
             UpdateLineRenderer();
         }
         UpdateSelectedWordDisplay();
     }
+
 
     void UpdateSelectedWordDisplay()
     {
@@ -350,4 +356,18 @@ public class LevelGenerator : MonoBehaviour
         }
         return Color.white; // Default color if no config or colors available
     }
+
+    #region Word search panel configuration
+
+    void CreateWordPanels()
+    {
+        foreach (string word in wordsToFind)
+        {
+            WordsSearchItem wordSearchItem = Instantiate(wordsSearchItem, wordsSearchItemsParent);
+            wordSearchItem.Initialize(word);
+            wordSearchItems.Add(word, wordSearchItem);
+        }
+    }
+
+    #endregion
 }
