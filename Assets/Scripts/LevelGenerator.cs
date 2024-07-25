@@ -16,7 +16,6 @@ public class LevelGenerator : MonoBehaviour
     public bool allowVerticalPlacement = true;
     public bool allowDiagonalPlacement = true;
     public bool allowReverseWords = true;
-    public GameObject selectionPrefab; // Prefab de la imagen circular de selección
 
     private List<Theme> wordThemes;
     private Letter[,] grid;
@@ -242,8 +241,8 @@ public class LevelGenerator : MonoBehaviour
 
     void DisplayTopicAndWords()
     {
-        topicTitleText.text = "Topic: " + selectedTheme;
-        wordsToFindText.text = "Find the words: " + string.Join(", ", wordsToFind);
+        topicTitleText.text = selectedTheme;
+        wordsToFindText.text = string.Join(", ", wordsToFind);
     }
 
     public void StartSelectingLetter(Letter letter)

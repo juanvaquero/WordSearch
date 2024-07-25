@@ -12,7 +12,7 @@ public class LineRendererController : MonoBehaviour
         lineRenderer.startWidth = 0.5f;
         lineRenderer.endWidth = 0.5f;
         lineRenderer.numCapVertices = lineRenderer.numCornerVertices = 15;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = new Color(Color.yellow.r, Color.yellow.g, Color.yellow.b, 0.5f) };
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.35f) };
     }
 
     public void SetLevelGenerator(LevelGenerator generator)
