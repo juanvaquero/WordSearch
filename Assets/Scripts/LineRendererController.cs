@@ -1,41 +1,38 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LineRendererController : MonoBehaviour
 {
     private LineRenderer lineRenderer;
-    private LevelGenerator levelGenerator;
 
-    void Start()
+    void Awake()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.positionCount = 0;
         lineRenderer.startWidth = 0.5f;
         lineRenderer.endWidth = 0.5f;
         lineRenderer.numCapVertices = lineRenderer.numCornerVertices = 15;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.35f) };
     }
 
-    public void SetLevelGenerator(LevelGenerator generator)
+    public void SetColor(Color color)
     {
-        levelGenerator = generator;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = color };
     }
 
-    public void UpdateLineRenderer()
+    public void SetPositions(Vector3[] positions)
     {
-        if (levelGenerator != null && levelGenerator.GetSelectedLetters().Count > 0)
+        if (positions.Length > 0)
         {
-            var selectedLetters = levelGenerator.GetSelectedLetters();
-            lineRenderer.positionCount = selectedLetters.Count;
-
-            for (int i = 0; i < selectedLetters.Count; i++)
+            lineRenderer.positionCount = positions.Length;
+            for (int i = 0; i < positions.Length; i++)
             {
-                lineRenderer.SetPosition(i, selectedLetters[i].transform.position - Vector3.forward);
+                lineRenderer.SetPosition(i, positions[i] - Vector3.forward);
             }
 
             // If it's only one letter selected, create a second position, to create a point in the first letter.
-            if (selectedLetters.Count == 1)
+            if (positions.Length == 1)
             {
-                lineRenderer.positionCount = selectedLetters.Count + 1;
+                lineRenderer.positionCount = positions.Length + 1;
                 lineRenderer.SetPosition(1, lineRenderer.GetPosition(0));
             }
         }

@@ -16,6 +16,8 @@ public class LevelGenerator : MonoBehaviour
     public bool allowVerticalPlacement = true;
     public bool allowDiagonalPlacement = true;
     public bool allowReverseWords = true;
+    public Transform lineRendererParent; // Parent of all line renderers
+    public WordSearchConfig config;
 
     private List<Theme> wordThemes;
     private Letter[,] grid;
@@ -26,7 +28,9 @@ public class LevelGenerator : MonoBehaviour
     private bool isSelecting = false;
     private Vector2Int startGridPosition;
     private Vector2Int selectionDirection;
-    private LineRendererController lineRendererController;
+    private LineRendererController currentLineRendererController;
+    private List<LineRendererController> activeLineRenderers = new List<LineRendererController>();
+    private int colorIndex = 0;
 
     void Start()
     {
@@ -39,11 +43,7 @@ public class LevelGenerator : MonoBehaviour
             PlaceWords();
             FillGrid();
             DisplayTopicAndWords();
-
-            // Create LineRendererController
-            GameObject lineRendererObj = new GameObject("LineRendererController");
-            lineRendererController = lineRendererObj.AddComponent<LineRendererController>();
-            lineRendererController.SetLevelGenerator(this);
+            CreateNewLineRenderer();
         }
         else
         {
@@ -241,8 +241,8 @@ public class LevelGenerator : MonoBehaviour
 
     void DisplayTopicAndWords()
     {
-        topicTitleText.text = selectedTheme;
-        wordsToFindText.text = string.Join(", ", wordsToFind);
+        topicTitleText.text = "Topic: " + selectedTheme;
+        wordsToFindText.text = "Find the words: " + string.Join(", ", wordsToFind);
     }
 
     public void StartSelectingLetter(Letter letter)
@@ -300,14 +300,16 @@ public class LevelGenerator : MonoBehaviour
             Debug.Log("Found word: " + formedWord);
             wordsToFind.Remove(formedWord);
             // Mantener la selección actual
+            currentLineRendererController = null;
+            CreateNewLineRenderer();
         }
         else
         {
             // Limpiar selección si la palabra no es encontrada
             selectedLetters.Clear();
+            UpdateLineRenderer();
         }
         UpdateSelectedWordDisplay();
-        UpdateLineRenderer();
     }
 
     void UpdateSelectedWordDisplay()
@@ -322,9 +324,30 @@ public class LevelGenerator : MonoBehaviour
 
     void UpdateLineRenderer()
     {
-        if (lineRendererController != null)
+        if (currentLineRendererController != null)
         {
-            lineRendererController.UpdateLineRenderer();
+            Vector3[] positions = selectedLetters.Select(letter => letter.transform.position).ToArray();
+            currentLineRendererController.SetPositions(positions);
         }
+    }
+
+    void CreateNewLineRenderer()
+    {
+        GameObject lineRendererObj = new GameObject("LineRendererController");
+        lineRendererObj.transform.SetParent(lineRendererParent);
+        currentLineRendererController = lineRendererObj.AddComponent<LineRendererController>();
+        currentLineRendererController.SetColor(GetNextColor());
+        activeLineRenderers.Add(currentLineRendererController);
+    }
+
+    Color GetNextColor()
+    {
+        if (config != null && config.colors.Count > 0)
+        {
+            Color color = config.colors[colorIndex];
+            colorIndex = (colorIndex + 1) % config.colors.Count;
+            return color;
+        }
+        return Color.white; // Default color if no config or colors available
     }
 }

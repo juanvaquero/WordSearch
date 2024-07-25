@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b811ea6af28a14d7bbc0808a8756b398, type: 3}
+  m_Name: WordSearchConfig
+  m_EditorClassIdentifier: 
+  colors:
+  - {r: 0.9960785, g: 0.52156866, b: 0.5176471, a: 0.29803923}
+  - {r: 0.36078432, g: 0.9176471, b: 0.34117648, a: 0.29803923}
+  - {r: 0.5921569, g: 0.49411768, b: 0.9960785, a: 0.29803923}
+  - {r: 0.97647065, g: 0.4431373, b: 0.7960785, a: 0.29803923}
+  - {r: 0.9921569, g: 0.69411767, b: 0.3019608, a: 0.29803923}
+  - {r: 0.4784314, g: 0.7137255, b: 0.9921569, a: 0.29803923}
