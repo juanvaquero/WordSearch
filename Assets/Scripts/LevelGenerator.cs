@@ -82,8 +82,6 @@ public class LevelGenerator : MonoBehaviour
         if (themes.Count > 0)
         {
             selectedTheme = themes[Random.Range(0, themes.Count)];
-            selectedTheme = themes[4];
-
             foreach (var theme in wordThemes)
             {
                 if (theme.name == selectedTheme)
