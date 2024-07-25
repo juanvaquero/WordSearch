@@ -86,7 +86,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 if (theme.name == selectedTheme)
                 {
-                    currentWordList = theme.words.FindAll(word => word.Length <= gridSize && word.Length <= 10);
+                    currentWordList = theme.words.FindAll(word => word.Length <= gridSize && word.Length <= 10).Select(word => word.ToLower()).ToList();
                     break;
                 }
             }
@@ -122,7 +122,11 @@ public class LevelGenerator : MonoBehaviour
             if (!usedIndices.Contains(index))
             {
                 usedIndices.Add(index);
-                wordsToFind.Add(currentWordList[index]);
+                string word = currentWordList[index].ToLower();
+                if (!wordsToFind.Contains(word))
+                {
+                    wordsToFind.Add(word);
+                }
             }
         }
     }
@@ -148,7 +152,7 @@ public class LevelGenerator : MonoBehaviour
     {
         for (int i = 0; i < wordsToFind.Count; i++)
         {
-            string wordToPlace = wordsToFind[i].ToUpper();
+            string wordToPlace = wordsToFind[i];
             if (allowReverseWords && Random.value > 0.5f)
             {
                 wordToPlace = ReverseString(wordToPlace);
@@ -156,9 +160,11 @@ public class LevelGenerator : MonoBehaviour
 
             if (!PlaceWordInGrid(wordToPlace))
             {
-                // If the word couldn't be placed, try finding another word from the current theme
+                // If the word couldn't be placed, remove it from wordsToFind and try another word from the list
+                string word = wordsToFind[i];
                 wordsToFind.RemoveAt(i);
                 i--; // Adjust the index to try again
+                currentWordList.Remove(word); // Remove the word from the possible words list
                 TryPlaceAlternativeWord();
             }
         }
@@ -242,92 +248,22 @@ public class LevelGenerator : MonoBehaviour
         return true;
     }
 
-    bool CanPlaceWordWithOverlap(string word, int row, int col, int direction)
-    {
-        switch (direction)
-        {
-            case 0: // horizontal
-                if (col + word.Length > gridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (grid[row, col + i].letter != ' ' && grid[row, col + i].letter != word[i])
-                        return false;
-                break;
-
-            case 1: // vertical
-                if (row + word.Length > gridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col].letter != ' ' && grid[row + i, col].letter != word[i])
-                        return false;
-                break;
-
-            case 2: // diagonal (down-right)
-                if (row + word.Length > gridSize || col + word.Length > gridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col + i].letter != ' ' && grid[row + i, col + i].letter != word[i])
-                        return false;
-                break;
-
-            case 3: // diagonal (down-left)
-                if (row + word.Length > gridSize || col - word.Length < 0) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (grid[row + i, col - i].letter != ' ' && grid[row + i, col - i].letter != word[i])
-                        return false;
-                break;
-        }
-        return true;
-    }
-
-    void PlaceWordWithOverlap(string word)
-    {
-        int attempts = 100;
-        while (attempts > 0)
-        {
-            int row = Random.Range(0, gridSize);
-            int col = Random.Range(0, gridSize);
-            int direction = Random.Range(0, allowDiagonalPlacement ? 4 : (allowVerticalPlacement ? 2 : 1)); // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
-
-            if (CanPlaceWordWithOverlap(word, row, col, direction))
-            {
-                for (int i = 0; i < word.Length; i++)
-                {
-                    switch (direction)
-                    {
-                        case 0: // horizontal
-                            grid[row, col + i].Initialize(word[i], new Vector2Int(row, col + i));
-                            break;
-                        case 1: // vertical
-                            grid[row + i, col].Initialize(word[i], new Vector2Int(row + i, col));
-                            break;
-                        case 2: // diagonal (down-right)
-                            grid[row + i, col + i].Initialize(word[i], new Vector2Int(row + i, col + i));
-                            break;
-                        case 3: // diagonal (down-left)
-                            grid[row + i, col - i].Initialize(word[i], new Vector2Int(row + i, col - i));
-                            break;
-                    }
-                }
-                break;
-            }
-            attempts--;
-        }
-    }
-
     void TryPlaceAlternativeWord()
     {
-        foreach (string word in currentWordList)
+        for (int i = 0; i < currentWordList.Count; i++)
         {
-            if (!wordsToFind.Contains(word.ToUpper()))
+            string word = currentWordList[i];
+            if (!wordsToFind.Contains(word))
             {
-                string wordToPlace = word.ToUpper();
                 if (allowReverseWords && Random.value > 0.5f)
                 {
-                    wordToPlace = ReverseString(wordToPlace);
+                    word = ReverseString(word);
                 }
 
-                if (PlaceWordInGrid(wordToPlace))
+                if (PlaceWordInGrid(word))
                 {
-                    wordsToFind.Add(wordToPlace);
-                    CreateWordPanels(); // Update word panels with the new word
+                    wordsToFind.Add(word);
+                    CreateWordPanel(word); // Add the new word panel
                     return;
                 }
             }
@@ -342,7 +278,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 if (grid[i, j].letter == ' ')
                 {
-                    char randomChar = (char)('A' + Random.Range(0, 26));
+                    char randomChar = (char)('a' + Random.Range(0, 26));
                     grid[i, j].Initialize(randomChar, new Vector2Int(i, j));
                 }
             }
@@ -474,8 +410,16 @@ public class LevelGenerator : MonoBehaviour
         // Create new panels
         foreach (string word in wordsToFind)
         {
-            WordsSearchItem wordSearchItem = Instantiate(wordsSearchItem, wordsSearchItemsParent);
-            wordSearchItem.Initialize(word);
+            CreateWordPanel(word);
+        }
+    }
+
+    void CreateWordPanel(string word)
+    {
+        WordsSearchItem wordSearchItem = Instantiate(wordsSearchItem, wordsSearchItemsParent);
+        wordSearchItem.Initialize(word);
+        if (!wordSearchItems.ContainsKey(word))
+        {
             wordSearchItems.Add(word, wordSearchItem);
         }
     }
