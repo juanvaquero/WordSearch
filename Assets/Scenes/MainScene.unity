@@ -591,9 +591,9 @@ MonoBehaviour:
   topicTitleText: {fileID: 1469472873}
   wordThemesFile: {fileID: 4900000, guid: 62bc6f2c67a1f4f92a59d2c1ab9df26d, type: 3}
   numberOfWordsToFind: 6
-  allowVerticalPlacement: 1
+  allowVerticalPlacement: 0
   allowDiagonalPlacement: 1
-  allowReverseWords: 1
+  allowReverseWords: 0
   lineRendererParent: {fileID: 2143115271}
   config: {fileID: 11400000, guid: 4ea4f752b997a4e6c83c310ac87058d1, type: 2}
   wordsSearchItem: {fileID: 1481796329445848473, guid: aea8b6013e81f4dc18377bd4c438f2f7, type: 3}

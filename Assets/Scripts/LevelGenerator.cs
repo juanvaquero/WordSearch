@@ -10,7 +10,6 @@ public class LevelGenerator : MonoBehaviour
     public Transform gridParent;
     public TextMeshProUGUI selectedWordText;
     public TextMeshProUGUI topicTitleText;
-
     public TextAsset wordThemesFile;
     public int numberOfWordsToFind = 5;
     public bool allowVerticalPlacement = true;
@@ -22,7 +21,6 @@ public class LevelGenerator : MonoBehaviour
     public WordsSearchItem wordsSearchItem;
     public Transform wordsSearchItemsParent;
     private Dictionary<string, WordsSearchItem> wordSearchItems = new Dictionary<string, WordsSearchItem>();
-
 
     private List<Theme> wordThemes;
     private Letter[,] grid;
@@ -103,6 +101,9 @@ public class LevelGenerator : MonoBehaviour
         wordsToFind = new List<string>();
         List<int> usedIndices = new List<int>();
 
+        // Sort the word list by length in descending order
+        currentWordList = currentWordList.OrderByDescending(word => word.Length).ToList();
+
         for (int i = 0; i < numberOfWordsToFind; i++)
         {
             if (currentWordList.Count == 0)
@@ -142,14 +143,21 @@ public class LevelGenerator : MonoBehaviour
 
     void PlaceWords()
     {
-        foreach (string word in wordsToFind)
+        for (int i = 0; i < wordsToFind.Count; i++)
         {
-            string wordToPlace = word.ToUpper();
+            string wordToPlace = wordsToFind[i].ToUpper();
             if (allowReverseWords && Random.value > 0.5f)
             {
                 wordToPlace = ReverseString(wordToPlace);
             }
-            PlaceWordInGrid(wordToPlace);
+
+            if (!PlaceWordInGrid(wordToPlace))
+            {
+                // If the word couldn't be placed, try finding another word from the current theme
+                wordsToFind.RemoveAt(i);
+                i--; // Adjust the index to try again
+                TryPlaceAlternativeWord();
+            }
         }
     }
 
@@ -160,7 +168,7 @@ public class LevelGenerator : MonoBehaviour
         return new string(charArray);
     }
 
-    void PlaceWordInGrid(string word)
+    bool PlaceWordInGrid(string word)
     {
         int attempts = 100;
         while (attempts > 0)
@@ -189,10 +197,11 @@ public class LevelGenerator : MonoBehaviour
                             break;
                     }
                 }
-                break;
+                return true;
             }
             attempts--;
         }
+        return false;
     }
 
     bool CanPlaceWord(string word, int row, int col, int direction)
@@ -228,6 +237,98 @@ public class LevelGenerator : MonoBehaviour
                 break;
         }
         return true;
+    }
+
+    bool CanPlaceWordWithOverlap(string word, int row, int col, int direction)
+    {
+        switch (direction)
+        {
+            case 0: // horizontal
+                if (col + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row, col + i].letter != ' ' && grid[row, col + i].letter != word[i])
+                        return false;
+                break;
+
+            case 1: // vertical
+                if (row + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col].letter != ' ' && grid[row + i, col].letter != word[i])
+                        return false;
+                break;
+
+            case 2: // diagonal (down-right)
+                if (row + word.Length > gridSize || col + word.Length > gridSize) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col + i].letter != ' ' && grid[row + i, col + i].letter != word[i])
+                        return false;
+                break;
+
+            case 3: // diagonal (down-left)
+                if (row + word.Length > gridSize || col - word.Length < 0) return false;
+                for (int i = 0; i < word.Length; i++)
+                    if (grid[row + i, col - i].letter != ' ' && grid[row + i, col - i].letter != word[i])
+                        return false;
+                break;
+        }
+        return true;
+    }
+
+    void PlaceWordWithOverlap(string word)
+    {
+        int attempts = 100;
+        while (attempts > 0)
+        {
+            int row = Random.Range(0, gridSize);
+            int col = Random.Range(0, gridSize);
+            int direction = Random.Range(0, allowDiagonalPlacement ? 4 : (allowVerticalPlacement ? 2 : 1)); // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
+
+            if (CanPlaceWordWithOverlap(word, row, col, direction))
+            {
+                for (int i = 0; i < word.Length; i++)
+                {
+                    switch (direction)
+                    {
+                        case 0: // horizontal
+                            grid[row, col + i].Initialize(word[i], new Vector2Int(row, col + i));
+                            break;
+                        case 1: // vertical
+                            grid[row + i, col].Initialize(word[i], new Vector2Int(row + i, col));
+                            break;
+                        case 2: // diagonal (down-right)
+                            grid[row + i, col + i].Initialize(word[i], new Vector2Int(row + i, col + i));
+                            break;
+                        case 3: // diagonal (down-left)
+                            grid[row + i, col - i].Initialize(word[i], new Vector2Int(row + i, col - i));
+                            break;
+                    }
+                }
+                break;
+            }
+            attempts--;
+        }
+    }
+
+    void TryPlaceAlternativeWord()
+    {
+        foreach (string word in currentWordList)
+        {
+            if (!wordsToFind.Contains(word.ToUpper()))
+            {
+                string wordToPlace = word.ToUpper();
+                if (allowReverseWords && Random.value > 0.5f)
+                {
+                    wordToPlace = ReverseString(wordToPlace);
+                }
+
+                if (PlaceWordInGrid(wordToPlace))
+                {
+                    wordsToFind.Add(wordToPlace);
+                    CreateWordPanels(); // Update word panels with the new word
+                    return;
+                }
+            }
+        }
     }
 
     void FillGrid()
@@ -310,13 +411,12 @@ public class LevelGenerator : MonoBehaviour
         }
         else
         {
-            // Clear the selection letters if the word is founded.
+            // Clear the selection letters if the word is not found.
             selectedLetters.Clear();
             UpdateLineRenderer();
         }
         UpdateSelectedWordDisplay();
     }
-
 
     void UpdateSelectedWordDisplay()
     {
@@ -361,6 +461,14 @@ public class LevelGenerator : MonoBehaviour
 
     void CreateWordPanels()
     {
+        // Clear existing panels
+        foreach (Transform child in wordsSearchItemsParent)
+        {
+            Destroy(child.gameObject);
+        }
+        wordSearchItems.Clear();
+
+        // Create new panels
         foreach (string word in wordsToFind)
         {
             WordsSearchItem wordSearchItem = Instantiate(wordsSearchItem, wordsSearchItemsParent);
