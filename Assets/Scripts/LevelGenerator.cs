@@ -1,8 +1,6 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 public class LevelGenerator : MonoBehaviour
@@ -18,6 +16,7 @@ public class LevelGenerator : MonoBehaviour
     public bool allowVerticalPlacement = true;
     public bool allowDiagonalPlacement = true;
     public bool allowReverseWords = true;
+    public GameObject selectionPrefab; // Prefab de la imagen circular de selección
 
     private List<Theme> wordThemes;
     private Letter[,] grid;
@@ -26,6 +25,9 @@ public class LevelGenerator : MonoBehaviour
     private List<string> wordsToFind;
     private List<Letter> selectedLetters = new List<Letter>();
     private bool isSelecting = false;
+    private Vector2Int startGridPosition;
+    private Vector2Int selectionDirection;
+    private LineRendererController lineRendererController;
 
     void Start()
     {
@@ -38,6 +40,11 @@ public class LevelGenerator : MonoBehaviour
             PlaceWords();
             FillGrid();
             DisplayTopicAndWords();
+
+            // Create LineRendererController
+            GameObject lineRendererObj = new GameObject("LineRendererController");
+            lineRendererController = lineRendererObj.AddComponent<LineRendererController>();
+            lineRendererController.SetLevelGenerator(this);
         }
         else
         {
@@ -122,7 +129,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 Letter letter = Instantiate(letterPrefab, gridParent);
                 letter.SetLevelGenerator(this);
-                letter.Initialize(' ', new Vector2(i, j));
+                letter.Initialize(' ', new Vector2Int(i, j));
                 grid[i, j] = letter;
             }
         }
@@ -164,16 +171,16 @@ public class LevelGenerator : MonoBehaviour
                     switch (direction)
                     {
                         case 0: // horizontal
-                            grid[row, col + i].Initialize(word[i], new Vector2(row, col + i));
+                            grid[row, col + i].Initialize(word[i], new Vector2Int(row, col + i));
                             break;
                         case 1: // vertical
-                            grid[row + i, col].Initialize(word[i], new Vector2(row + i, col));
+                            grid[row + i, col].Initialize(word[i], new Vector2Int(row + i, col));
                             break;
                         case 2: // diagonal (down-right)
-                            grid[row + i, col + i].Initialize(word[i], new Vector2(row + i, col + i));
+                            grid[row + i, col + i].Initialize(word[i], new Vector2Int(row + i, col + i));
                             break;
                         case 3: // diagonal (down-left)
-                            grid[row + i, col - i].Initialize(word[i], new Vector2(row + i, col - i));
+                            grid[row + i, col - i].Initialize(word[i], new Vector2Int(row + i, col - i));
                             break;
                     }
                 }
@@ -227,7 +234,7 @@ public class LevelGenerator : MonoBehaviour
                 if (grid[i, j].letter == ' ')
                 {
                     char randomChar = (char)('A' + Random.Range(0, 26));
-                    grid[i, j].Initialize(randomChar, new Vector2(i, j));
+                    grid[i, j].Initialize(randomChar, new Vector2Int(i, j));
                 }
             }
         }
@@ -244,16 +251,44 @@ public class LevelGenerator : MonoBehaviour
         isSelecting = true;
         selectedLetters.Clear();
         selectedLetters.Add(letter);
+        startGridPosition = letter.gridPosition;
+        selectionDirection = Vector2Int.zero;
         UpdateSelectedWordDisplay();
+        UpdateLineRenderer();
     }
 
     public void SelectLetter(Letter letter)
     {
-        if (isSelecting && !selectedLetters.Contains(letter))
+        if (isSelecting)
         {
-            selectedLetters.Add(letter);
-            UpdateSelectedWordDisplay();
+            Vector2Int newDirection = Vector2Int.RoundToInt(letter.gridPosition - startGridPosition);
+            newDirection.x = Mathf.Clamp(newDirection.x, -1, 1);
+            newDirection.y = Mathf.Clamp(newDirection.y, -1, 1);
+
+            if (newDirection != selectionDirection && selectionDirection != Vector2Int.zero)
+            {
+                ClearSelectionFromDirectionChange();
+                selectionDirection = Vector2Int.zero;
+            }
+
+            selectionDirection = newDirection;
+            Vector2Int expectedPosition = startGridPosition + selectionDirection * selectedLetters.Count;
+
+            if (Vector2Int.RoundToInt(letter.gridPosition) == expectedPosition)
+            {
+                selectedLetters.Add(letter);
+                UpdateSelectedWordDisplay();
+                UpdateLineRenderer();
+            }
         }
+    }
+
+    void ClearSelectionFromDirectionChange()
+    {
+        selectedLetters.Clear();
+        selectedLetters.Add(grid[startGridPosition.x, startGridPosition.y]);
+        UpdateSelectedWordDisplay();
+        UpdateLineRenderer();
     }
 
     public void FinishSelectingLetter()
@@ -265,14 +300,32 @@ public class LevelGenerator : MonoBehaviour
         {
             Debug.Log("Found word: " + formedWord);
             wordsToFind.Remove(formedWord);
-            // Aquí puedes agregar lógica para actualizar la UI, eliminar las letras, etc.
+            // Mantener la selección actual
         }
-        selectedLetters.Clear();
+        else
+        {
+            // Limpiar selección si la palabra no es encontrada
+            selectedLetters.Clear();
+        }
         UpdateSelectedWordDisplay();
+        UpdateLineRenderer();
     }
 
     void UpdateSelectedWordDisplay()
     {
         selectedWordText.text = new string(selectedLetters.Select(l => l.letter).ToArray());
+    }
+
+    public List<Letter> GetSelectedLetters()
+    {
+        return selectedLetters;
+    }
+
+    void UpdateLineRenderer()
+    {
+        if (lineRendererController != null)
+        {
+            lineRendererController.UpdateLineRenderer();
+        }
     }
 }

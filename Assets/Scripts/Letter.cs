@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class Letter : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerUpHandler
 {
     public char letter;
-    public Vector2 gridPosition;
+    public Vector2Int gridPosition;
     public TextMeshProUGUI letterText;
     private LevelGenerator _levelGenerator;
 
@@ -13,14 +13,13 @@ public class Letter : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, 
     {
         _levelGenerator = levelGenerator;
     }
-    public void Initialize(char c, Vector2 position)
+
+    public void Initialize(char c, Vector2Int position)
     {
         letter = c;
         gridPosition = position;
         letterText.text = letter.ToString();
     }
-
-
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -37,11 +36,9 @@ public class Letter : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, 
         }
     }
 
-
     public void OnPointerUp(PointerEventData eventData)
     {
         Debug.Log(letter + " |up " + gridPosition.ToString());
         _levelGenerator.FinishSelectingLetter();
     }
-
 }
