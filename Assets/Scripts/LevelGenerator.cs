@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -128,6 +129,8 @@ public class LevelGenerator : MonoBehaviour
 
     void GenerateGrid()
     {
+        gridParent.GetComponent<GridLayoutGroup>().constraintCount = gridSize;
+
         grid = new Letter[gridSize, gridSize];
         for (int i = 0; i < gridSize; i++)
         {
