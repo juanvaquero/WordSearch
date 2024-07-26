@@ -88,30 +88,6 @@
             ]
         },
         {
-            "name": "Sports",
-            "words": [
-                "soccer",
-                "tennis",
-                "golf",
-                "rugby",
-                "hockey",
-                "swimming",
-                "cycling",
-                "boxing",
-                "skiing",
-                "skating",
-                "running",
-                "judo",
-                "chess",
-                "archery",
-                "fencing",
-                "rowing",
-                "diving",
-                "cricket",
-                "sailing"
-            ]
-        },
-        {
             "name": "Vehicles",
             "words": [
                 "car",
@@ -160,28 +136,6 @@
             ]
         },
         {
-            "name": "Music",
-            "words": [
-                "guitar",
-                "piano",
-                "drum",
-                "violin",
-                "trumpet",
-                "flute",
-                "cello",
-                "harp",
-                "tuba",
-                "oboe",
-                "banjo",
-                "ukulele",
-                "harmonica",
-                "maracas",
-                "bongo",
-                "viola",
-                "cymbal"
-            ]
-        },
-        {
             "name": "Movies",
             "words": [
                 "titanic",
@@ -198,21 +152,6 @@
                 "inception",
                 "amelie",
                 "godzilla"
-            ]
-        },
-        {
-            "name": "Books",
-            "words": [
-                "hamlet",
-                "macbeth",
-                "dracula",
-                "ulysses",
-                "odyssey",
-                "iliad",
-                "gatsby",
-                "utopia",
-                "hobbit",
-                "harry"
             ]
         },
         {
