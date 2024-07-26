@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b811ea6af28a14d7bbc0808a8756b398, type: 3}
   m_Name: WordSearchConfig
   m_EditorClassIdentifier: 
-  colors:
+  GridSize: 6
+  NumberOfWordsToFind: 6
+  AllowVerticalPlacement: 1
+  AllowDiagonalPlacement: 1
+  AllowReverseWords: 1
+  Colors:
   - {r: 0.9960785, g: 0.52156866, b: 0.5176471, a: 0.29803923}
   - {r: 0.36078432, g: 0.9176471, b: 0.34117648, a: 0.29803923}
   - {r: 0.5921569, g: 0.49411768, b: 0.9960785, a: 0.29803923}

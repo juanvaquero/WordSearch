@@ -223,6 +223,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d951369c9a15649988e2e4f1f8cb6878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  letter: 65
-  gridPosition: {x: 0, y: 0}
-  letterText: {fileID: 2556058711132917779}
+  _letterText: {fileID: 2556058711132917779}

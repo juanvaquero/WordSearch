@@ -740,20 +740,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d61dc4dbf9441d5a79f016fcbe4d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: 6
-  letterPrefab: {fileID: 4659905931836705189, guid: 5fb79060b8f03430db22051e9c660125, type: 3}
-  gridParent: {fileID: 519927356}
-  selectedWordText: {fileID: 1995990143}
-  topicTitleText: {fileID: 1469472873}
-  wordThemesFile: {fileID: 4900000, guid: 62bc6f2c67a1f4f92a59d2c1ab9df26d, type: 3}
-  numberOfWordsToFind: 6
-  allowVerticalPlacement: 1
-  allowDiagonalPlacement: 1
-  allowReverseWords: 1
-  lineRendererParent: {fileID: 2143115271}
-  config: {fileID: 11400000, guid: 4ea4f752b997a4e6c83c310ac87058d1, type: 2}
-  wordsSearchItem: {fileID: 1481796329445848473, guid: aea8b6013e81f4dc18377bd4c438f2f7, type: 3}
-  wordsSearchItemsParent: {fileID: 2094766463}
+  _letterPrefab: {fileID: 4659905931836705189, guid: 5fb79060b8f03430db22051e9c660125, type: 3}
+  _gridParent: {fileID: 519927356}
+  _selectedWordText: {fileID: 1995990143}
+  _topicTitleText: {fileID: 1469472873}
+  _wordThemesFile: {fileID: 4900000, guid: 62bc6f2c67a1f4f92a59d2c1ab9df26d, type: 3}
+  _lineRendererParent: {fileID: 2143115271}
+  _config: {fileID: 11400000, guid: 4ea4f752b997a4e6c83c310ac87058d1, type: 2}
+  _wordsSearchItemPrefab: {fileID: 1481796329445848473, guid: aea8b6013e81f4dc18377bd4c438f2f7, type: 3}
+  _wordsSearchItemsParent: {fileID: 2094766463}
 --- !u!4 &727306937
 Transform:
   m_ObjectHideFlags: 0
