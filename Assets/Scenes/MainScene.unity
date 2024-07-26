@@ -275,9 +275,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e5b6ae970077406fb059d142a38975a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelGenerator: {fileID: 727306936}
-  backgroundPopups: {fileID: 1524072789}
-  popups:
+  _levelGenerator: {fileID: 727306936}
+  _backgroundPopups: {fileID: 1524072789}
+  _popups:
   - {fileID: 5596121861392607794}
 --- !u!1 &498244593
 GameObject:
