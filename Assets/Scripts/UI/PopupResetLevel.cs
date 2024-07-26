@@ -23,12 +23,12 @@ public class PopupResetLevel : Popup
     #region Public Methods
     public override void Show()
     {
-        _popup.SetActive(true);
+        base.Show();
     }
 
     public override void Hide()
     {
-        _popup.SetActive(false);
+        base.Hide();
     }
     #endregion
 
