@@ -54,6 +54,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
+        _wordSelector.Initialize(this);
         _lineRendererManager.Initialize(_lineRendererParent, _config);
         _wordPanelManager.Initialize(_wordsSearchItemPrefab, _wordsSearchItemsParent);
         LoadWordThemes();
@@ -303,7 +304,10 @@ public class LevelGenerator : MonoBehaviour
     private void UpdateSelectedWordDisplay()
     {
         _selectedWordText.text = new string(_wordSelector.SelectedLetters.Select(l => l.Letter).ToArray());
-        // TODO: Apply an animation
+
+        // Show/Hide the selected word depending on the is any letter selected or not.
+        bool activeSelectedWord = _selectedWordText.text != string.Empty;
+        _selectedWordText.transform.parent.gameObject.SetActive(activeSelectedWord);
     }
 
     private void CheckIfLevelCompleted()
