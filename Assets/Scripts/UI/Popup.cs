@@ -4,14 +4,13 @@ using UnityEngine;
 
 public abstract class Popup : MonoBehaviour
 {
-    #region __Variables
+    #region Serialized Fields
     [SerializeField]
     protected string _popupID;
     protected LevelGenerator _levelGenerator;
     #endregion
 
-    #region __Public Methods
-
+    #region Public Methods
     public string GetPopupID()
     {
         return _popupID;
@@ -24,6 +23,5 @@ public abstract class Popup : MonoBehaviour
 
     public abstract void Show();
     public abstract void Hide();
-
     #endregion
 }

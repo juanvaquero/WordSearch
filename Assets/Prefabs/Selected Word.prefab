@@ -223,6 +223,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 394b555044f204557844369ef1402352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wordText: {fileID: 5695759939352053637}
-  underlineImage: {fileID: 6305428195281290456}
-  animationTime: 0.25
+  _wordText: {fileID: 5695759939352053637}
+  _underlineImage: {fileID: 6305428195281290456}
+  _animationTime: 0.25

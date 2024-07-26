@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class uGUITools : MonoBehaviour
 {
+	#region Public Methods
+
 	[MenuItem("uGUI/Anchors to Corners %#x")]
-	static void AnchorsToCorners()
+	public static void AnchorsToCorners()
 	{
 		foreach (Transform transform in Selection.transforms)
 		{
@@ -25,7 +27,7 @@ public class uGUITools : MonoBehaviour
 	}
 
 	[MenuItem("uGUI/Corners to Anchors %]")]
-	static void CornersToAnchors()
+	public static void CornersToAnchors()
 	{
 		foreach (Transform transform in Selection.transforms)
 		{
@@ -36,4 +38,5 @@ public class uGUITools : MonoBehaviour
 			t.offsetMin = t.offsetMax = new Vector2(0, 0);
 		}
 	}
+	#endregion
 }

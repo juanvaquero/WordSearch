@@ -481,10 +481,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _popupID: Reset Level
-  popup: {fileID: 2939460852801527383}
-  descriptionText: {fileID: 1331512198138628968}
-  yesButton: {fileID: 6229556438181712663}
-  noButton: {fileID: 8043446533818788860}
+  _popup: {fileID: 2939460852801527383}
+  _descriptionText: {fileID: 1331512198138628968}
+  _yesButton: {fileID: 6229556438181712663}
+  _noButton: {fileID: 8043446533818788860}
 --- !u!1 &4116854653948431606
 GameObject:
   m_ObjectHideFlags: 0

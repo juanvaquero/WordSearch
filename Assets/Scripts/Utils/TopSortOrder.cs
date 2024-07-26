@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Canvas))]
-public class TopSortOrder : MonoBehaviour {
+public class TopSortOrder : MonoBehaviour
+{
 
+	#region Unity Methods
 	void Start () {
 		int mayorSortingOrder = 2;
 		foreach (var gameobject in GameObject.FindObjectsOfType<Canvas>())
@@ -12,4 +14,6 @@ public class TopSortOrder : MonoBehaviour {
 		}
 		GetComponent<Canvas>().sortingOrder = mayorSortingOrder;
 	}
+
+	#endregion
 }

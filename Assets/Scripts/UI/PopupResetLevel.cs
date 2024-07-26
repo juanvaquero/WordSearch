@@ -4,31 +4,36 @@ using UnityEngine.UI;
 
 public class PopupResetLevel : Popup
 {
-    public GameObject popup; // Reference to the popup GameObject
-    public TextMeshProUGUI descriptionText; // Reference to description text
-    public Button yesButton; // Reference to the "Yes" button
-    public Button noButton; // Reference to the "No" button
+    #region Serialized Fields
+    [SerializeField] private GameObject _popup; // Reference to the popup GameObject
+    [SerializeField] private TextMeshProUGUI _descriptionText; // Reference to description text
+    [SerializeField] private Button _yesButton; // Reference to the "Yes" button
+    [SerializeField] private Button _noButton; // Reference to the "No" button
+    #endregion
 
-
-    void Start()
+    #region Unity Methods
+    private void Start()
     {
         // Attach listeners to the buttons
-        yesButton.onClick.AddListener(OnYesButtonClicked);
-        noButton.onClick.AddListener(OnNoButtonClicked);
+        _yesButton.onClick.AddListener(OnYesButtonClicked);
+        _noButton.onClick.AddListener(OnNoButtonClicked);
     }
+    #endregion
 
+    #region Public Methods
     public override void Show()
     {
-        popup.SetActive(true);
+        _popup.SetActive(true);
     }
 
     public override void Hide()
     {
-        popup.SetActive(false);
+        _popup.SetActive(false);
     }
+    #endregion
 
-    // Method called when "Yes" button is clicked
-    void OnYesButtonClicked()
+    #region Private Methods
+    private void OnYesButtonClicked()
     {
         // Reset the level with a new theme and words
         _levelGenerator.ResetLevel();
@@ -37,12 +42,10 @@ public class PopupResetLevel : Popup
         PopupController.Instance.HidePopup(_popupID);
     }
 
-    // Method called when "No" button is clicked
-    void OnNoButtonClicked()
+    private void OnNoButtonClicked()
     {
         // Exit the application
         Application.Quit();
     }
-
-
+    #endregion
 }
