@@ -129,11 +129,6 @@ public class LevelGenerator : MonoBehaviour
                 }
             }
         }
-
-        foreach (string item in wordsToFind)
-        {
-            Debug.LogError(item);
-        }
     }
 
     void GenerateGrid()
@@ -178,7 +173,7 @@ public class LevelGenerator : MonoBehaviour
 
     bool PlaceWordInGrid(string word, bool allowOverlap = false)
     {
-        int attempts = 100;
+        int attempts = 200;
         while (attempts > 0)
         {
             if (allowReverseWords && Random.value > 0.5f)
@@ -378,6 +373,7 @@ public class LevelGenerator : MonoBehaviour
             wordSearchItems[formedWord].MarkAsFound();
             currentLineRendererController = null;
             CreateNewLineRenderer();
+            CheckIfLevelCompleted();
         }
         else
         {
@@ -391,12 +387,24 @@ public class LevelGenerator : MonoBehaviour
     void UpdateSelectedWordDisplay()
     {
         selectedWordText.text = new string(selectedLetters.Select(l => l.letter).ToArray());
+        //TODO Apply a animation
     }
 
     public List<Letter> GetSelectedLetters()
     {
         return selectedLetters;
     }
+
+    private void CheckIfLevelCompleted()
+    {
+        // If it's not more words to find, the level is completed.
+        if (wordsToFind.Count == 0)
+        {
+            PopupController.Instance.ShowPopup("Reset Level");
+        }
+    }
+
+    #region Line Render methods
 
     void UpdateLineRenderer()
     {
@@ -427,6 +435,7 @@ public class LevelGenerator : MonoBehaviour
         return Color.white; // Default color if no config or colors available
     }
 
+    #endregion
     #region Word search panel configuration
 
     void CreateWordPanels()
@@ -456,4 +465,43 @@ public class LevelGenerator : MonoBehaviour
     }
 
     #endregion
+    #region Reset Level
+
+    public void ResetLevel()
+    {
+        // Destroy all children of gridParent
+        foreach (Transform child in gridParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Destroy all active line renderers
+        foreach (var lineRenderer in activeLineRenderers)
+        {
+            Destroy(lineRenderer.gameObject);
+        }
+        activeLineRenderers.Clear();
+
+        // Clear the list of words to find and selected letters
+        wordsToFind.Clear();
+        selectedLetters.Clear();
+
+        // Reset the level state
+        colorIndex = 0;
+
+        // Generate the grid again
+        GenerateGrid();
+        SelectRandomTheme();
+        SelectRandomWords();
+        UpdateSelectedWordDisplay();
+        PlaceWords();
+        FillGrid();
+        CreateNewLineRenderer();
+        DisplayTopic();
+        CreateWordPanels();
+    }
+
+
+    #endregion
+
 }
