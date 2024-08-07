@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b811ea6af28a14d7bbc0808a8756b398, type: 3}
   m_Name: WordSearchConfig
   m_EditorClassIdentifier: 
-  GridSize: 6
+  GridSize: 7
+  WidthOffsetScreen: 80
   NumberOfWordsToFind: 6
   AllowVerticalPlacement: 1
   AllowDiagonalPlacement: 1

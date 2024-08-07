@@ -6,12 +6,8 @@ using UnityEngine.UI;
 
 public class LevelGenerator : MonoBehaviour
 {
+
     #region Public Variables
-    public int GridSize => _config.GridSize;
-    public int NumberOfWordsToFind => _config.NumberOfWordsToFind;
-    public bool AllowVerticalPlacement => _config.AllowVerticalPlacement;
-    public bool AllowDiagonalPlacement => _config.AllowDiagonalPlacement;
-    public bool AllowReverseWords => _config.AllowReverseWords;
 
     public LetterItem[,] Grid
     {
@@ -134,7 +130,11 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateGrid()
     {
-        _gridParent.GetComponent<GridLayoutGroup>().constraintCount = _config.GridSize;
+        GridLayoutGroup grid = _gridParent.GetComponent<GridLayoutGroup>();
+        grid.constraintCount = _config.GridSize;
+
+        int cellSize = Mathf.RoundToInt((Screen.width - _config.WidthOffsetScreen) / _config.GridSize);
+        grid.cellSize = Vector2Int.one * cellSize;
 
         _grid = new LetterItem[_config.GridSize, _config.GridSize];
         for (int i = 0; i < _config.GridSize; i++)
@@ -143,7 +143,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 LetterItem letter = Instantiate(_letterPrefab, _gridParent);
                 letter.SetLevelGenerator(this);
-                letter.Initialize(' ', new Vector2Int(i, j));
+                letter.Initialize('A', new Vector2Int(i, j));
                 _grid[i, j] = letter;
             }
         }
@@ -173,7 +173,7 @@ public class LevelGenerator : MonoBehaviour
             int col = Random.Range(0, _config.GridSize);
             int direction = Random.Range(0, _config.AllowDiagonalPlacement ? 4 : (_config.AllowVerticalPlacement ? 2 : 1)); // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
 
-            if (allowOverlap ? CanPlaceWordWithOverlap(word, row, col, direction) : CanPlaceWord(word, row, col, direction))
+            if (CanPlaceWord(word, row, col, direction))
             {
                 for (int i = 0; i < word.Length; i++)
                 {
@@ -235,40 +235,6 @@ public class LevelGenerator : MonoBehaviour
         return true;
     }
 
-    private bool CanPlaceWordWithOverlap(string word, int row, int col, int direction)
-    {
-        switch (direction)
-        {
-            case 0: // horizontal
-                if (col + word.Length > _config.GridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (_grid[row, col + i].Letter != ' ' && _grid[row, col + i].Letter != word[i])
-                        return false;
-                break;
-
-            case 1: // vertical
-                if (row + word.Length > _config.GridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (_grid[row + i, col].Letter != ' ' && _grid[row + i, col].Letter != word[i])
-                        return false;
-                break;
-
-            case 2: // diagonal (down-right)
-                if (row + word.Length > _config.GridSize || col + word.Length > _config.GridSize) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (_grid[row + i, col + i].Letter != ' ' && _grid[row + i, col + i].Letter != word[i])
-                        return false;
-                break;
-
-            case 3: // diagonal (down-left)
-                if (row + word.Length > _config.GridSize || col - word.Length < 0) return false;
-                for (int i = 0; i < word.Length; i++)
-                    if (_grid[row + i, col - i].Letter != ' ' && _grid[row + i, col - i].Letter != word[i])
-                        return false;
-                break;
-        }
-        return true;
-    }
 
     private void TryPlaceAlternativeWord()
     {
