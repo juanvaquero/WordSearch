@@ -143,7 +143,7 @@ public class LevelGenerator : MonoBehaviour
             {
                 LetterItem letter = Instantiate(_letterPrefab, _gridParent);
                 letter.SetLevelGenerator(this);
-                letter.Initialize('A', new Vector2Int(i, j));
+                letter.Initialize(' ', new Vector2Int(i, j));
                 _grid[i, j] = letter;
             }
         }
