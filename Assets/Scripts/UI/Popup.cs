@@ -19,13 +19,6 @@ public class Popup : MonoBehaviour
     private CanvasGroup _canvasGroup;
     #endregion
 
-    #region Unity Methods
-    protected void Awake()
-    {
-        _canvasGroup = GetComponent<CanvasGroup>();
-    }
-    #endregion
-
     #region Public Methods
     public string GetPopupID()
     {
@@ -34,6 +27,7 @@ public class Popup : MonoBehaviour
 
     public virtual void Configure(LevelGenerator levelGenerator)
     {
+        _canvasGroup = GetComponent<CanvasGroup>();
         _levelGenerator = levelGenerator;
     }
 
@@ -41,13 +35,15 @@ public class Popup : MonoBehaviour
     {
         gameObject.SetActive(true);
         _canvasGroup.alpha = 0f;
-        StartCoroutine(FadeIn());
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(FadeIn());
     }
 
     public virtual void Hide()
     {
         _canvasGroup.alpha = 1f;
-        StartCoroutine(FadeOut());
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(FadeOut());
     }
     #endregion
 
