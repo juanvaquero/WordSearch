@@ -32,8 +32,8 @@ public class LevelGenerator : MonoBehaviour
     private List<Theme> _wordThemes;
     private LetterItem[,] _grid;
     private string _selectedTheme;
-    private List<string> _currentWordList;
     private List<string> _wordsToFind;
+    private List<string> _currentWordList;
 
     private WordSelector _wordSelector;
     private LineRendererManager _lineRendererManager;
@@ -63,6 +63,16 @@ public class LevelGenerator : MonoBehaviour
             Debug.LogError("No word themes available. Check the wordThemesFile.");
         }
     }
+
+    private void Update()
+    {
+        //Debug purpose
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetLevel();
+        }
+    }
+
     #endregion
 
     #region Private Methods
@@ -153,7 +163,7 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (var word in _wordsToFind.ToList())
         {
-            if (!PlaceWordInGrid(word, allowOverlap: true))
+            if (PlaceWordInGrid(word) == false)
             {
                 _wordsToFind.Remove(word);
                 TryPlaceAlternativeWord();
@@ -161,9 +171,9 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    private bool PlaceWordInGrid(string word, bool allowOverlap = false)
+    private bool PlaceWordInGrid(string word)
     {
-        int attempts = 200;
+        int attempts = CalculatePossiblePlacements(_config.GridSize, word.Length);
         while (attempts > 0)
         {
             if (_config.AllowReverseWords && Random.value > 0.5f)
@@ -171,7 +181,8 @@ public class LevelGenerator : MonoBehaviour
 
             int row = Random.Range(0, _config.GridSize);
             int col = Random.Range(0, _config.GridSize);
-            int direction = Random.Range(0, _config.AllowDiagonalPlacement ? 4 : (_config.AllowVerticalPlacement ? 2 : 1)); // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
+            // 0 = horizontal, 1 = vertical, 2 = diagonal (down-right), 3 = diagonal (down-left)
+            int direction = Random.Range(0, _config.AllowDiagonalPlacement ? 4 : (_config.AllowVerticalPlacement ? 2 : 1));
 
             if (CanPlaceWord(word, row, col, direction))
             {
@@ -199,34 +210,46 @@ public class LevelGenerator : MonoBehaviour
         }
         return false;
     }
+    // Method to calculate the number of possible placements
+    private int CalculatePossiblePlacements(int gridSize, int wordLength)
+    {
+        // Apply the formula to calculate the number of possible placements of a word.
+        int possiblePlacements = 4 * (gridSize * (gridSize - wordLength + 1) + (gridSize - wordLength + 1) * (gridSize - wordLength + 1));
+        return possiblePlacements;
+    }
+
 
     private bool CanPlaceWord(string word, int row, int col, int direction)
     {
         switch (direction)
         {
             case 0: // horizontal
-                if (col + word.Length > _config.GridSize) return false;
+                if (col + word.Length > _config.GridSize)
+                    return false;
                 for (int i = 0; i < word.Length; i++)
                     if (_grid[row, col + i].Letter != ' ' && _grid[row, col + i].Letter != word[i])
                         return false;
                 break;
 
             case 1: // vertical
-                if (row + word.Length > _config.GridSize) return false;
+                if (row + word.Length > _config.GridSize)
+                    return false;
                 for (int i = 0; i < word.Length; i++)
                     if (_grid[row + i, col].Letter != ' ' && _grid[row + i, col].Letter != word[i])
                         return false;
                 break;
 
             case 2: // diagonal (down-right)
-                if (row + word.Length > _config.GridSize || col + word.Length > _config.GridSize) return false;
+                if (row + word.Length > _config.GridSize || col + word.Length > _config.GridSize)
+                    return false;
                 for (int i = 0; i < word.Length; i++)
                     if (_grid[row + i, col + i].Letter != ' ' && _grid[row + i, col + i].Letter != word[i])
                         return false;
                 break;
 
             case 3: // diagonal (down-left)
-                if (row + word.Length > _config.GridSize || col - word.Length < 0) return false;
+                if (row + word.Length > _config.GridSize || col - word.Length < 0)
+                    return false;
                 for (int i = 0; i < word.Length; i++)
                     if (_grid[row + i, col - i].Letter != ' ' && _grid[row + i, col - i].Letter != word[i])
                         return false;
@@ -240,9 +263,15 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (var word in _currentWordList.ToList())
         {
-            if (!PlaceWordInGrid(word, true))
+            if (PlaceWordInGrid(word) == false)
             {
                 _currentWordList.Remove(word); // Remove the word from the possible words list
+            }
+            else
+            {
+                _wordsToFind.Add(word);
+                _currentWordList.Remove(word);
+                return;
             }
         }
     }
