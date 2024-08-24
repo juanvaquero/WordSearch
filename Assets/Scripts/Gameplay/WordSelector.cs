@@ -33,37 +33,34 @@ public class WordSelector : MonoBehaviour
 
     public void SelectLetter(LetterItem letter)
     {
-        if (_isSelecting)
+        if (!_isSelecting) return;
+
+        Vector2Int newDirection = GetDirection(letter.GridPosition, _startGridPosition);
+
+        // If the new direction is (0,0), only the first letter is selected
+        if (newDirection == Vector2Int.zero)
         {
-            Vector2Int newDirection = GetDirection(letter.GridPosition, _startGridPosition);
-
             ClearSelectionFromDirectionChange();
-            _selectionDirection = newDirection;
+            _selectionDirection = Vector2Int.zero;
+            _selectedLetters.Add(letter);
+            return;
+        }
 
-            // If the new direction is equal to (0,0) then is only selected the first letter.
-            if (newDirection == Vector2Int.zero)
-            {
-                _selectedLetters.Add(letter);
-                return;
-            }
+        // Generate a list of possible selected letters based on the new direction
+        List<LetterItem> possibleSelectedLetters = GetLettersInDirection(_startGridPosition, letter.GridPosition, newDirection);
 
-            Vector2Int currentPosition = _startGridPosition;
-            LetterItem currentLetter = _levelGenerator.GetLetterAtGridPosition(currentPosition);
+        // If no valid selection is found, exit
+        if (possibleSelectedLetters.Count == 0) return;
 
-            while (currentLetter != null && currentPosition != letter.GridPosition)
-            {
-                if (currentLetter != null)
-                {
-                    _selectedLetters.Add(currentLetter);
-                }
+        // Update selection direction and selected letters
+        ClearSelectionFromDirectionChange();
+        _selectionDirection = newDirection;
+        _selectedLetters = possibleSelectedLetters;
 
-                currentPosition += _selectionDirection;
-                currentLetter = _levelGenerator.GetLetterAtGridPosition(currentPosition);
-            }
-
-            Vector2Int lastLetterDirection = GetDirection(letter.GridPosition, _selectedLetters.Last().GridPosition);
-            if (lastLetterDirection == _selectionDirection)
-                _selectedLetters.Add(letter);
+        // Add the current letter if it aligns with the current selection direction
+        if (GetDirection(letter.GridPosition, _selectedLetters.Last().GridPosition) == _selectionDirection)
+        {
+            _selectedLetters.Add(letter);
         }
     }
 
@@ -99,14 +96,22 @@ public class WordSelector : MonoBehaviour
         return direction;
     }
 
-    private bool IsDirectionValid(Vector2Int newDirection)
+    private List<LetterItem> GetLettersInDirection(Vector2Int start, Vector2Int end, Vector2Int direction)
     {
-        // Ensure the direction is strictly horizontal, vertical, or diagonal
-        bool isHorizontal = newDirection.x != 0 && newDirection.y == 0;
-        bool isVertical = newDirection.x == 0 && newDirection.y != 0;
-        bool isDiagonal = Mathf.Abs(newDirection.x) == 1 && Mathf.Abs(newDirection.y) == 1;
+        List<LetterItem> letters = new List<LetterItem>();
+        Vector2Int currentPosition = start;
+        LetterItem currentLetter;
 
-        return isHorizontal || isVertical || isDiagonal;
+        while (currentPosition != end)
+        {
+            currentLetter = _levelGenerator.GetLetterAtGridPosition(currentPosition);
+            if (currentLetter == null) return new List<LetterItem>();
+
+            letters.Add(currentLetter);
+            currentPosition += direction;
+        }
+
+        return letters;
     }
 
     #endregion
