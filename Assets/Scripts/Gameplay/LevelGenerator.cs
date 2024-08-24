@@ -377,5 +377,17 @@ public class LevelGenerator : MonoBehaviour
 
         InitializeLevel();
     }
+
+    public LetterItem GetLetterAtGridPosition(Vector2Int gridPosition)
+    {
+        // This method should return the LetterItem corresponding to the given grid position.
+        // Implement the logic to retrieve the letter from your data structure based on the grid position.
+
+        if (gridPosition.x >= _config.GridSize || gridPosition.y >= _config.GridSize || gridPosition.x < 0 || gridPosition.y < 0)
+            return null;
+
+        return _grid[gridPosition.x, gridPosition.y];
+    }
+
     #endregion
 }

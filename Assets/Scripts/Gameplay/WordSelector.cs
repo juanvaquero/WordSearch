@@ -35,23 +35,35 @@ public class WordSelector : MonoBehaviour
     {
         if (_isSelecting)
         {
-            Vector2Int newDirection = Vector2Int.RoundToInt(letter.GridPosition - _startGridPosition);
-            newDirection.x = Mathf.Clamp(newDirection.x, -1, 1);
-            newDirection.y = Mathf.Clamp(newDirection.y, -1, 1);
+            Vector2Int newDirection = GetDirection(letter.GridPosition, _startGridPosition);
 
-            if (newDirection != _selectionDirection && _selectionDirection != Vector2Int.zero)
-            {
-                ClearSelectionFromDirectionChange();
-                _selectionDirection = Vector2Int.zero;
-            }
-
+            ClearSelectionFromDirectionChange();
             _selectionDirection = newDirection;
-            Vector2Int expectedPosition = _startGridPosition + _selectionDirection * _selectedLetters.Count;
 
-            if (Vector2Int.RoundToInt(letter.GridPosition) == expectedPosition && !_selectedLetters.Contains(letter))
+            // If the new direction is equal to (0,0) then is only selected the first letter.
+            if (newDirection == Vector2Int.zero)
             {
                 _selectedLetters.Add(letter);
+                return;
             }
+
+            Vector2Int currentPosition = _startGridPosition;
+            LetterItem currentLetter = _levelGenerator.GetLetterAtGridPosition(currentPosition);
+
+            while (currentLetter != null && currentPosition != letter.GridPosition)
+            {
+                if (currentLetter != null)
+                {
+                    _selectedLetters.Add(currentLetter);
+                }
+
+                currentPosition += _selectionDirection;
+                currentLetter = _levelGenerator.GetLetterAtGridPosition(currentPosition);
+            }
+
+            Vector2Int lastLetterDirection = GetDirection(letter.GridPosition, _selectedLetters.Last().GridPosition);
+            if (lastLetterDirection == _selectionDirection)
+                _selectedLetters.Add(letter);
         }
     }
 
@@ -70,7 +82,32 @@ public class WordSelector : MonoBehaviour
     private void ClearSelectionFromDirectionChange()
     {
         _selectedLetters.Clear();
-        _selectedLetters.Add(_levelGenerator.Grid[_startGridPosition.x, _startGridPosition.y]);
     }
+
+    private Vector2Int GetDirection(Vector2Int pos1, Vector2Int pos2)
+    {
+        //If is the same position return the zero direction.
+        if (pos1 == pos2)
+            return Vector2Int.zero;
+
+        Vector2Int direction = Vector2Int.RoundToInt(pos1 - pos2);
+
+        int maximumExponent = Mathf.Max(Mathf.Abs(direction.x), Mathf.Abs(direction.y));
+        direction.x = Mathf.CeilToInt(direction.x / maximumExponent);
+        direction.y = Mathf.CeilToInt(direction.y / maximumExponent);
+
+        return direction;
+    }
+
+    private bool IsDirectionValid(Vector2Int newDirection)
+    {
+        // Ensure the direction is strictly horizontal, vertical, or diagonal
+        bool isHorizontal = newDirection.x != 0 && newDirection.y == 0;
+        bool isVertical = newDirection.x == 0 && newDirection.y != 0;
+        bool isDiagonal = Mathf.Abs(newDirection.x) == 1 && Mathf.Abs(newDirection.y) == 1;
+
+        return isHorizontal || isVertical || isDiagonal;
+    }
+
     #endregion
 }
