@@ -5,6 +5,8 @@ using UnityEngine;
 public class WordSelector : MonoBehaviour
 {
     #region Private Variables
+    private const string LETTER_SELECTED = "Letter selected";
+
     private List<LetterItem> _selectedLetters = new List<LetterItem>();
     private Vector2Int _startGridPosition;
     private Vector2Int _selectionDirection;
@@ -29,6 +31,7 @@ public class WordSelector : MonoBehaviour
         _selectedLetters.Add(letter);
         _startGridPosition = letter.GridPosition;
         _selectionDirection = Vector2Int.zero;
+        AudioManager.Instance.PlaySFX(LETTER_SELECTED + " " + _selectedLetters.Count);
     }
 
     public void SelectLetter(LetterItem letter)
@@ -36,13 +39,13 @@ public class WordSelector : MonoBehaviour
         if (!_isSelecting) return;
 
         Vector2Int newDirection = GetDirection(letter.GridPosition, _startGridPosition);
-
         // If the new direction is (0,0), only the first letter is selected
         if (newDirection == Vector2Int.zero)
         {
             ClearSelectionFromDirectionChange();
             _selectionDirection = Vector2Int.zero;
             _selectedLetters.Add(letter);
+            AudioManager.Instance.PlaySFX(LETTER_SELECTED + " " + _selectedLetters.Count);
             return;
         }
 
@@ -61,6 +64,7 @@ public class WordSelector : MonoBehaviour
         if (GetDirection(letter.GridPosition, _selectedLetters.Last().GridPosition) == _selectionDirection)
         {
             _selectedLetters.Add(letter);
+            AudioManager.Instance.PlaySFX(LETTER_SELECTED + " " + _selectedLetters.Count);
         }
     }
 

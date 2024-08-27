@@ -34,7 +34,6 @@ public class LetterItem : MonoBehaviour, IPointerDownHandler, IPointerEnterHandl
     #region Pointer Event Handlers
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log(Letter + " |down " + GridPosition);
         _levelGenerator.StartSelectingLetter(this);
     }
 
@@ -42,14 +41,12 @@ public class LetterItem : MonoBehaviour, IPointerDownHandler, IPointerEnterHandl
     {
         if (Input.GetMouseButton(0))
         {
-            Debug.Log(Letter + " |enter click down " + GridPosition);
             _levelGenerator.SelectLetter(this);
         }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log(Letter + " |up " + GridPosition);
         _levelGenerator.FinishSelectingLetter();
     }
     #endregion

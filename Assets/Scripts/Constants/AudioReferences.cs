@@ -5,7 +5,17 @@
 public static class AudioReferences
 {
     public const string BACKGROUND_MUSIC = "Background music";
-    public const string LETTER_SELECTED = "Letter selected";
     public const string WORD_SELECTED = "Word selected";
+    public const string LEVEL_COMPLETED = "Level completed";
     public const string BUTTON_CLICKED = "Button clicked";
+    public const string LETTER_SELECTED_1 = "Letter selected 1";
+    public const string LETTER_SELECTED_2 = "Letter selected 2";
+    public const string LETTER_SELECTED_3 = "Letter selected 3";
+    public const string LETTER_SELECTED_4 = "Letter selected 4";
+    public const string LETTER_SELECTED_5 = "Letter selected 5";
+    public const string LETTER_SELECTED_6 = "Letter selected 6";
+    public const string LETTER_SELECTED_7 = "Letter selected 7";
+    public const string LETTER_SELECTED_8 = "Letter selected 8";
+    public const string LETTER_SELECTED_9 = "Letter selected 9";
+    public const string LETTER_SELECTED_10 = "Letter selected 10";
 }
