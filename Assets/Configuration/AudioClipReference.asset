@@ -18,17 +18,17 @@ MonoBehaviour:
   - Id: Background music
     Clip: {fileID: 8300000, guid: 92d3d8009fe2f4ff9be4e10b897c896d, type: 3}
     Pitch: 1
-  - Id: Word selected
-    Clip: {fileID: 8300000, guid: 6707ae2ecae99496dbf5227b8b118d42, type: 3}
-    Pitch: 1
-  - Id: Level completed
-    Clip: {fileID: 8300000, guid: 3b84f1dfb15fd497abac7777292bc62c, type: 3}
-    Pitch: 1
   - Id: Button clicked
     Clip: {fileID: 8300000, guid: 3a888ffb6bd234709abfa27ca7b1af3d, type: 3}
     Pitch: 1
+  - Id: Word selected
+    Clip: {fileID: 8300000, guid: 6707ae2ecae99496dbf5227b8b118d42, type: 3}
+    Pitch: 1.25
   - Id: Word error
     Clip: {fileID: 8300000, guid: d9d17d8342fba4d2ca41eeb98d8ecc4e, type: 3}
+    Pitch: 1
+  - Id: Level completed
+    Clip: {fileID: 8300000, guid: 4a31298c80d9745bbb0eb2368f654e74, type: 3}
     Pitch: 1
   - Id: Letter selected 1
     Clip: {fileID: 8300000, guid: e1c4415e4324b479bb1390333906bb16, type: 3}
