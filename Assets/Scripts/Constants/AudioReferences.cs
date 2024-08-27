@@ -8,6 +8,7 @@ public static class AudioReferences
     public const string WORD_SELECTED = "Word selected";
     public const string LEVEL_COMPLETED = "Level completed";
     public const string BUTTON_CLICKED = "Button clicked";
+    public const string WORD_ERROR = "Word error";
     public const string LETTER_SELECTED_1 = "Letter selected 1";
     public const string LETTER_SELECTED_2 = "Letter selected 2";
     public const string LETTER_SELECTED_3 = "Letter selected 3";

@@ -1,4 +1,5 @@
 using UnityEngine;
+using static AudioClipReference;
 
 public class AudioManager : MonoBehaviour
 {
@@ -24,37 +25,28 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         // Start playing background music if you have one set up with a specific ID
-        PlayMusic("BackgroundMusic"); // Replace with your actual music ID
+        PlayMusic(AudioReferences.BACKGROUND_MUSIC);
     }
 
     public void PlayMusic(string id)
     {
-        AudioClip clip = audioClipReference.GetClipById(id);
-        if (clip == null) return;
+        AudioClipEntry clipRef = audioClipReference.GetClipById(id);
+        if (clipRef.Clip == null) return;
 
-        if (musicSource.clip == clip) return;
-        musicSource.clip = clip;
+        if (musicSource.clip == clipRef.Clip) return;
+        musicSource.clip = clipRef.Clip;
         musicSource.loop = true;
+        musicSource.pitch = clipRef.Pitch;
         musicSource.Play();
     }
 
     public void PlaySFX(string id)
     {
-        AudioClip clip = audioClipReference.GetClipById(id);
-        if (clip != null)
+        AudioClipEntry clipRef = audioClipReference.GetClipById(id);
+        if (clipRef.Clip != null)
         {
-            sfxSource.PlayOneShot(clip);
+            sfxSource.pitch = clipRef.Pitch;
+            sfxSource.PlayOneShot(clipRef.Clip);
         }
-    }
-
-    // Event handler methods
-    public void OnLetterSelected()
-    {
-        PlaySFX("LetterSelect"); // Replace with your actual SFX ID
-    }
-
-    public void OnWordFound()
-    {
-        PlaySFX("WordFound"); // Replace with your actual SFX ID
     }
 }

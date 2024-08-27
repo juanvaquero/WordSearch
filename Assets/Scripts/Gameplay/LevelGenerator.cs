@@ -309,6 +309,7 @@ public class LevelGenerator : MonoBehaviour
     {
         if (_wordsToFind.Count == 0)
         {
+            AudioManager.Instance.PlaySFX(AudioReferences.LEVEL_COMPLETED);
             PopupController.Instance.ShowPopup("Reset Level");
         }
     }
@@ -352,6 +353,7 @@ public class LevelGenerator : MonoBehaviour
             Debug.Log("Found word: " + formedWord);
             _wordsToFind.Remove(formedWord);
             _wordPanelManager.MarkWordAsFound(formedWord);
+            AudioManager.Instance.PlaySFX(AudioReferences.WORD_SELECTED);
             _lineRendererManager.CreateNewLineRenderer();
             CheckIfLevelCompleted();
         }
@@ -359,6 +361,7 @@ public class LevelGenerator : MonoBehaviour
         {
             _wordSelector.ClearSelection();
             _lineRendererManager.UpdateLineRenderer(_wordSelector.SelectedLetters);
+            AudioManager.Instance.PlaySFX(AudioReferences.WORD_ERROR);
         }
         UpdateSelectedWordDisplay();
     }

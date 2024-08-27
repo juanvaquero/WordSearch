@@ -13,6 +13,8 @@ public class AudioClipReference : ConstantScriptableObject
     {
         public string Id;
         public AudioClip Clip;
+        [Range(-3f, 3f)]
+        public float Pitch = 1f;
 
         public bool CompareConstant(string value)
         {
@@ -25,13 +27,13 @@ public class AudioClipReference : ConstantScriptableObject
         }
     }
 
-    public AudioClip GetClipById(string id)
+    public AudioClipEntry GetClipById(string id)
     {
         foreach (var entry in _audioClips)
         {
             if (entry.Id == id)
             {
-                return entry.Clip;
+                return entry;
             }
         }
         Debug.LogWarning("AudioClip with ID: " + id + " not found!");

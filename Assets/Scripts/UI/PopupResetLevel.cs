@@ -35,15 +35,20 @@ public class PopupResetLevel : Popup
     #region Private Methods
     private void OnYesButtonClicked()
     {
+        AudioManager.Instance.PlaySFX(AudioReferences.BUTTON_CLICKED);
+
         // Reset the level with a new theme and words
         _levelGenerator.ResetLevel();
 
         // Hide the popup
         PopupController.Instance.HidePopup(_popupID);
+
     }
 
     private void OnNoButtonClicked()
     {
+        AudioManager.Instance.PlaySFX(AudioReferences.BUTTON_CLICKED);
+
         // Exit the application
         Application.Quit();
     }
