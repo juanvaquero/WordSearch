@@ -19,7 +19,7 @@ public class LevelGenerator : MonoBehaviour
     #region Serialized Fields
     [SerializeField] private LetterItem _letterPrefab;
     [SerializeField] private Transform _gridParent;
-    [SerializeField] private TextMeshProUGUI _selectedWordText;
+    [SerializeField] private SelectedWordPanel _selectedWordPanel;
     [SerializeField] private TextMeshProUGUI _topicTitleText;
     [SerializeField] private TextAsset _wordThemesFile;
     [SerializeField] private Transform _lineRendererParent;
@@ -298,11 +298,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void UpdateSelectedWordDisplay()
     {
-        _selectedWordText.text = new string(_wordSelector.SelectedLetters.Select(l => l.Letter).ToArray());
-
-        // Show/Hide the selected word depending on the is any letter selected or not.
-        bool activeSelectedWord = _selectedWordText.text != string.Empty;
-        _selectedWordText.transform.parent.gameObject.SetActive(activeSelectedWord);
+        string selectedWord = new string(_wordSelector.SelectedLetters.Select(l => l.Letter).ToArray());
+        _selectedWordPanel.SetSelectedWord(selectedWord);
     }
 
     private void CheckIfLevelCompleted()
@@ -356,12 +353,19 @@ public class LevelGenerator : MonoBehaviour
             AudioManager.Instance.PlaySFX(AudioReferences.WORD_SELECTED);
             _lineRendererManager.CreateNewLineRenderer();
             CheckIfLevelCompleted();
+            _selectedWordPanel.DoScaleAnimation();
         }
         else
         {
             _wordSelector.ClearSelection();
             _lineRendererManager.UpdateLineRenderer(_wordSelector.SelectedLetters);
-            AudioManager.Instance.PlaySFX(AudioReferences.WORD_ERROR);
+
+            // Execute the sound and animation error only when have more than one letter selected when drop the word selection.
+            if (formedWord.Length > 1)
+            {
+                AudioManager.Instance.PlaySFX(AudioReferences.WORD_ERROR);
+                _selectedWordPanel.DoShakeAnimation();
+            }
         }
         UpdateSelectedWordDisplay();
     }

@@ -342,6 +342,7 @@ GameObject:
   - component: {fileID: 498244599}
   - component: {fileID: 498244598}
   - component: {fileID: 498244597}
+  - component: {fileID: 498244600}
   m_Layer: 5
   m_Name: Selected Word Panel
   m_TagString: Untagged
@@ -459,6 +460,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!114 &498244600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498244593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c16ffd69fe1473e80142f09362deea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fadeAnimationTime: 0.15
+  _shakeAnimationTime: 0.5
+  _scaleAnimationTime: 0.5
+  _selectedWordText: {fileID: 1995990143}
+  _canvasGroup: {fileID: 498244597}
 --- !u!1 &519927355
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,7 +809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _letterPrefab: {fileID: 4659905931836705189, guid: 5fb79060b8f03430db22051e9c660125, type: 3}
   _gridParent: {fileID: 519927356}
-  _selectedWordText: {fileID: 1995990143}
+  _selectedWordPanel: {fileID: 498244600}
   _topicTitleText: {fileID: 1469472873}
   _wordThemesFile: {fileID: 4900000, guid: 62bc6f2c67a1f4f92a59d2c1ab9df26d, type: 3}
   _lineRendererParent: {fileID: 2143115271}
