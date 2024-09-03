@@ -343,8 +343,12 @@ public class LevelGenerator : MonoBehaviour
     public void FinishSelectingLetter()
     {
         _wordSelector.FinishSelectingLetter();
+
+        UpdateSelectedWordDisplay();
+
         string formedWord = new string(_wordSelector.SelectedLetters.Select(l => l.Letter).ToArray());
         formedWord = formedWord.ToLower();
+
         if (_wordsToFind.Contains(formedWord))
         {
             Debug.Log("Found word: " + formedWord);
@@ -367,7 +371,6 @@ public class LevelGenerator : MonoBehaviour
                 _selectedWordPanel.DoShakeAnimation();
             }
         }
-        UpdateSelectedWordDisplay();
     }
 
     public void ResetLevel()

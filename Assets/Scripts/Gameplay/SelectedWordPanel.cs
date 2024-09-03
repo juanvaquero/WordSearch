@@ -12,6 +12,7 @@ public class SelectedWordPanel : MonoBehaviour
     [SerializeField] private float _fadeAnimationTime = 0.5f;
     [SerializeField] private float _shakeAnimationTime = 0.5f;
     [SerializeField] private float _scaleAnimationTime = 0.5f;
+    [SerializeField] private float _delayFadeAnimationTime = 0.25f;
 
     [SerializeField] private TextMeshProUGUI _selectedWordText;
     [SerializeField] private CanvasGroup _canvasGroup;
@@ -27,15 +28,18 @@ public class SelectedWordPanel : MonoBehaviour
             return;
 
         _selectedWordText.text = selection;
-        if (_selectedWordText.text != string.Empty)
+
+        if (selection != string.Empty && _canvasGroup.alpha != 1f)
             DoFadeAnimation(true);
+        else if (selection.Length == 1)
+            DoFadeAnimation(false);
     }
 
     public void DoShakeAnimation()
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(transform.DOShakePosition(_shakeAnimationTime, new Vector3(10f, 0, 0), snapping: true, fadeOut: true));
-        sequence.Append(DoFadeAnimation(false).SetDelay(0.5f));
+        sequence.Append(DoFadeAnimation(false).SetDelay(_delayFadeAnimationTime));
         sequence.Play();
     }
 
@@ -43,7 +47,7 @@ public class SelectedWordPanel : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(transform.DOPunchScale(Vector3.one * 1.15f, _scaleAnimationTime));
-        sequence.Append(DoFadeAnimation(false).SetDelay(0.5f));
+        sequence.Append(DoFadeAnimation(false).SetDelay(_delayFadeAnimationTime));
         sequence.Play();
     }
 
