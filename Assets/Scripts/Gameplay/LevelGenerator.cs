@@ -329,21 +329,26 @@ public class LevelGenerator : MonoBehaviour
     public void StartSelectingLetter(LetterItem letter)
     {
         _wordSelector.StartSelectingLetter(letter);
+
         UpdateSelectedWordDisplay();
+        _selectedWordPanel.DoFadeAnimation(true);
+
         _lineRendererManager.UpdateLineRenderer(_wordSelector.SelectedLetters);
     }
 
     public void SelectLetter(LetterItem letter)
     {
         _wordSelector.SelectLetter(letter);
+
         UpdateSelectedWordDisplay();
+        _selectedWordPanel.DoFadeAnimation(true);
+
         _lineRendererManager.UpdateLineRenderer(_wordSelector.SelectedLetters);
     }
 
     public void FinishSelectingLetter()
     {
         _wordSelector.FinishSelectingLetter();
-
         UpdateSelectedWordDisplay();
 
         string formedWord = new string(_wordSelector.SelectedLetters.Select(l => l.Letter).ToArray());
@@ -371,6 +376,8 @@ public class LevelGenerator : MonoBehaviour
                 _selectedWordPanel.DoShakeAnimation();
             }
         }
+
+        _selectedWordPanel.DoFadeAnimation(false);
     }
 
     public void ResetLevel()

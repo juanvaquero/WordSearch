@@ -19,6 +19,11 @@ public class SelectedWordPanel : MonoBehaviour
 
     #endregion
     #region __Variables
+
+    private Tween _fadeAnimation;
+    private Sequence _shakeAnimation;
+    private Sequence _scaleAnimation;
+
     #endregion
     #region __Public methods
 
@@ -28,27 +33,38 @@ public class SelectedWordPanel : MonoBehaviour
             return;
 
         _selectedWordText.text = selection;
-
-        if (selection != string.Empty && _canvasGroup.alpha != 1f)
-            DoFadeAnimation(true);
-        else if (selection.Length == 1)
-            DoFadeAnimation(false);
     }
+
+    public void DoFadeAnimation(bool fadeIn)
+    {
+        if ((_shakeAnimation != null && _shakeAnimation.IsPlaying()) || (_scaleAnimation != null && _scaleAnimation.IsPlaying()))
+            return;
+
+
+        if ((fadeIn && _canvasGroup.alpha == 0f) || (!fadeIn && _canvasGroup.alpha > 0f))
+        {
+            _fadeAnimation?.Complete();
+            _fadeAnimation = FadeAnimation(fadeIn);
+        }
+    }
+
+
+
 
     public void DoShakeAnimation()
     {
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(transform.DOShakePosition(_shakeAnimationTime, new Vector3(10f, 0, 0), snapping: true, fadeOut: true));
-        sequence.Append(DoFadeAnimation(false).SetDelay(_delayFadeAnimationTime));
-        sequence.Play();
+        _shakeAnimation = DOTween.Sequence();
+        _shakeAnimation.Append(transform.DOShakePosition(_shakeAnimationTime, new Vector3(10f, 0, 0), snapping: true, fadeOut: true));
+        _shakeAnimation.Append(FadeAnimation(false).SetDelay(_delayFadeAnimationTime));
+        _shakeAnimation.Play();
     }
 
     public void DoScaleAnimation()
     {
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(transform.DOPunchScale(Vector3.one * 1.15f, _scaleAnimationTime));
-        sequence.Append(DoFadeAnimation(false).SetDelay(_delayFadeAnimationTime));
-        sequence.Play();
+        _scaleAnimation = DOTween.Sequence();
+        _scaleAnimation.Append(transform.DOPunchScale(Vector3.one * 1.15f, _scaleAnimationTime));
+        _scaleAnimation.Append(FadeAnimation(false).SetDelay(_delayFadeAnimationTime));
+        _scaleAnimation.Play();
     }
 
     #endregion
@@ -57,21 +73,23 @@ public class SelectedWordPanel : MonoBehaviour
     private void Awake()
     {
         _canvasGroup.alpha = 0;
+        _shakeAnimation = DOTween.Sequence();
+        _scaleAnimation = DOTween.Sequence();
     }
 
     #endregion
     #region __Private methods
 
-    private Tween DoFadeAnimation(bool fadeIn = true)
+    private Tween FadeAnimation(bool fadeIn = true)
     {
         _canvasGroup.alpha = 1f;
         float endValue = 0f;
         if (fadeIn)
         {
             _canvasGroup.alpha = 0f;
-            endValue = 1;
+            endValue = 1f;
         }
-        return _canvasGroup.DOFade(endValue, _fadeAnimationTime);
+        return _canvasGroup.DOFade(endValue, _fadeAnimationTime).OnComplete(() => _fadeAnimation = null);
     }
 
     #endregion
